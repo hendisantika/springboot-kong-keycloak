@@ -24,7 +24,7 @@ As we can see from the diagram, `book-service` will only be reachable through `K
 
 In `Kong`, it's installed [`kong-oidc`](https://github.com/nokia/kong-oidc) plugin that will enable the communication between `Kong` and `Keycloak` OpenID Connect Provider.
 
-This way, when `Kong` receives a request to `book-service`, it will validate together with `Keycloak` whether it's a valid request.
+This way, when `Kong` receives a request to `book-service`, it will validate with `Keycloak` whether it's a valid request.
 
 Also, before redirecting to the request to the upstream service, a `Serverless Function (post-function)` will get the access token present in the `X-Userinfo` header provided by `kong-oidc` plugin, decode it, extract the `username` and `preferred_username`, and enrich the request with these two information before sending to `book-service`
 
@@ -32,10 +32,10 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 - ### book-service
 
-  `Spring Boot` REST API application to manages books. The API doesn't have any security. `book-service` uses [`MongoDB`](https://www.mongodb.com) as storage.
+  `Spring Boot` REST API application to manage books. The API doesn't have any security. `book-service` uses [`MongoDB`](https://www.mongodb.com) as its storage.
 
-  Endpoints
-  ```
+  Endpoints:
+  ```text
      GET /actuator/health
      GET /api/books
     POST /api/books {"isbn": "...", "title": "..."}
@@ -51,20 +51,20 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Run application during development using Maven
 
-- Open a terminal and navigate to `springboot-kong-keycloak` root folder
+- Open a terminal and navigate to the `springboot-kong-keycloak` root folder.
 
-- Run the command below to start `mongodb` Docker container
-  ```
+- Run the command below to start `mongodb` Docker container:
+  ```bash
   docker run -d --name mongodb -p 27017:27017 mongo:8.0.3
   ```
 
-- Run the command below to start `book-service`
-  ```
+- Run the command below to start `book-service`:
+  ```bash
   ./mvnw clean spring-boot:run --projects book-service
   ```
 
-- Open another terminal and call application endpoints
-  ```
+- Open another terminal and call application endpoints:
+  ```bash
   curl -i localhost:9080/api/books
   curl -i -X POST localhost:9080/api/books -H "Content-Type: application/json" -d '{"isbn":"123", "title":"Kong & Keycloak"}'
   curl -i localhost:9080/api/books/123
@@ -72,24 +72,24 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   curl -i localhost:9080/actuator/health
   ```
 
-- To stop
-  - `book-service`, go to the terminal where it's running and press `Ctrl+C`
-  - `mongodb` Docker container, go to a terminal and run the following command
-    ```
+- To stop:
+  - `book-service`, go to the terminal where it's running and press `Ctrl+C`.
+  - `mongodb` Docker container, go to a terminal and run the following command:
+    ```bash
     docker rm -fv mongodb
     ```
 
 ## Build application Docker Image
 
-- In a terminal, make sure you are in `springboot-kong-keycloak` root folder
+- In a terminal, make sure you are in the `springboot-kong-keycloak` root folder.
 
 - Build Docker Image
   - JVM
-    ```
+    ```bash
     ./build-docker-images.sh
     ```
   - Native
-    ```
+    ```bash
     ./build-docker-images.sh native
     ```
 
@@ -100,23 +100,23 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Test application Docker Image
 
-- In a terminal, create a Docker network
-  ```
+- In a terminal, create a Docker network:
+  ```bash
   docker network create springboot-kong-keycloak-net
   ```
 
-- Run the command below to start `mongodb` Docker container
-  ```
+- Run the command below to start `mongodb` Docker container:
+  ```bash
   docker run -d --name mongodb -p 27017:27017 --network springboot-kong-keycloak-net mongo:8.0.3
   ```
 
-- Run the following command to start `book-service` Docker container
-  ```
+- Run the following command to start `book-service` Docker container:
+  ```bash
   docker run --rm -p 9080:9080 --name book-service -e MONGODB_HOST=mongodb --network springboot-kong-keycloak-net ivanfranchin/book-service:1.0.0
   ```
 
-- Open another terminal and call application endpoints
-  ```
+- Open another terminal and call application endpoints:
+  ```bash
   curl -i localhost:9080/api/books
   curl -i -X POST localhost:9080/api/books -H "Content-Type: application/json" -d '{"isbn":"123", "title":"Kong & Keycloak"}'
   curl -i localhost:9080/api/books/123
@@ -124,23 +124,23 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   curl -i localhost:9080/actuator/health
   ```
 
-- To stop
-  - `book-service`, go to the terminal where it's running and press `Ctrl+C`
-  - `mongodb` Docker container, go to a terminal and run the following command
-    ```
+- To stop:
+  - `book-service`, go to the terminal where it's running and press `Ctrl+C`.
+  - `mongodb` Docker container, go to a terminal and run the following command:
+    ```bash
     docker rm -fv mongodb
     ```
-  - remove Docker network
-    ```
+  - Remove Docker network:
+    ```bash
     docker network rm springboot-kong-keycloak-net
     ```
 
 ## Initialize Environment
 
-- In a terminal, make use you are in `springboot-kong-keycloak` root folder
+- In a terminal, make use you are in the `springboot-kong-keycloak` root folder.
 
-- Run the following script
-  ```
+- Run the following script:
+  ```bash
   ./init-environment.sh
   ```
 
@@ -148,10 +148,10 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Configure Keycloak
 
-- In a terminal, make sure you are in `springboot-kong-keycloak` root folder
+- In a terminal, make sure you are in the `springboot-kong-keycloak` root folder.
 
-- Run the following script to configure `Keycloak` for `book-service` application
-  ```
+- Run the following script to configure `Keycloak` for `book-service` application:
+  ```bash
   ./init-keycloak.sh
   ```
 
@@ -160,21 +160,21 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   - `book-service` client;
   - user with _username_ `ivan.franchin` and _password_ `123`.
 
-- The `book-service` client secret (`BOOK_SERVICE_CLIENT_SECRET`) is shown at the end of the execution. It will be used in the next step
+- The `book-service` client secret (`BOOK_SERVICE_CLIENT_SECRET`) is shown at the end of the execution. It will be used in the next step.
 
 - You can check the configuration in `Keycloak` by accessing http://localhost:8080. The credentials are `admin/admin`.
 
 ## Configure Kong
 
-- In a terminal, make sure you are in `springboot-kong-keycloak` root folder
+- In a terminal, make sure you are in the `springboot-kong-keycloak` root folder.
 
-- Create an environment variable that contains the `Client Secret` generated by `Keycloak` to `book-service` at [Configure Keycloak](#configure-keycloak) step
-  ```
+- Create an environment variable that contains the `Client Secret` generated by `Keycloak` to `book-service` at [Configure Keycloak](#configure-keycloak) step:
+  ```bash
   BOOK_SERVICE_CLIENT_SECRET=...
   ```
 
-- Run the following script to configure `Kong` for `book-service` application
-  ```
+- Run the following script to configure `Kong` for `book-service` application:
+  ```bash
   ./init-kong.sh $BOOK_SERVICE_CLIENT_SECRET
   ```
   
@@ -183,52 +183,52 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   - route to `/actuator` path;
   - route to `/api` path;
   - add `kong-oidc` plugin to route of `/api` path. It will authenticate users against `Keycloak` OpenID Connect Provider;
-  - add `serverless function (post-function)` plugin to route of `/api` path. It gets the access token present in the `X-Userinfo` header provided by `kong-oidc` plugin, decoded it, extracts the `username` and `preferred_username`, and enriches the request with these two information before sending to `book-service`.
+  - add `serverless function (post-function)` plugin to route of `/api` path. It gets the access token present in the `X-Userinfo` header provided by the `kong-oidc` plugin, decodes it, extracts the `username` and `preferred_username`, and enriches the request with this information before sending it to `book-service`.
 
 ## Testing
 
-- Try to call the public `GET /actuator/health` endpoint
-  ```
+- Try to call the public `GET /actuator/health` endpoint:
+  ```bash
   curl -i localhost:8000/actuator/health -H 'Host: book-service'
   ```
-  It should return
-  ```
+  It should return:
+  ```text
   HTTP/1.1 200
   {"status":"UP"}
   ```
 
-- Try to call the private `GET /api/books` endpoint without access token
-  ```
+- Try to call the private `GET /api/books` endpoint without access token:
+  ```bash
   curl -i localhost:8000/api/books -H 'Host: book-service'
   ```
-  It should return
-  ```
+  It should return:
+  ```text
   HTTP/1.1 401 Unauthorized
   no Authorization header found
   ```
 
-- Get `ivan.franchin` access token
-  ```
+- Get `ivan.franchin` access token:
+  ```bash
   ACCESS_TOKEN=$(./get-access-token.sh $BOOK_SERVICE_CLIENT_SECRET) && echo $ACCESS_TOKEN
   ```
   > **Note**: In `jwt.io`, you can decode and verify the `JWT` access token
 
-- Call again the private `GET /api/books` endpoint using the access token
-  ```
+- Call again the private `GET /api/books` endpoint using the access token:
+  ```bash
   curl -i localhost:8000/api/books \
     -H 'Host: book-service' \
     -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
-  It should return
-  ```
+  It should return:
+  ```text
   HTTP/1.1 200
   []
   ```
 
-- You can try other endpoints using access token
+- You can try other endpoints using access token:
 
   Create book
-  ```
+  ```bash
   curl -i -X POST localhost:8000/api/books \
     -H 'Host: book-service' \
     -H "Authorization: Bearer $ACCESS_TOKEN" \
@@ -236,14 +236,14 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
   ```
   
   Get book
-  ```
+  ```bash
   curl -i localhost:8000/api/books/123 \
     -H 'Host: book-service' \
     -H "Authorization: Bearer $ACCESS_TOKEN"
   ```
   
   Delete book 
-  ```
+  ```bash
   curl -i -X DELETE localhost:8000/api/books/123 \
     -H 'Host: book-service' \
     -H "Authorization: Bearer $ACCESS_TOKEN"
@@ -254,7 +254,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 - **MongoDB**
 
   List books
-  ```
+  ```bash
   docker exec -it mongodb mongo bookdb
   db.books.find()
   ```
@@ -262,15 +262,15 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
 ## Shutdown
 
-In a terminal and, inside `springboot-kong-keycloak` root folder, run the following script
-```
+In a terminal and, inside the `springboot-kong-keycloak` root folder, run the following script:
+```bash
 ./shutdown-environment.sh
 ```
 
 ## Cleanup
 
-To remove the Docker image created by this project, in a terminal and, inside `springboot-kong-keycloak` root folder, run the script below
-```
+To remove the Docker image created by this project, in a terminal and, inside the `springboot-kong-keycloak` root folder, run the script below:
+```bash
 ./remove-docker-images.sh
 ```
 
@@ -284,7 +284,7 @@ To remove the Docker image created by this project, in a terminal and, inside `s
 - Unable to upgrade to `kong` version `3.x` because `BasePlugin` class was deprecated in `kong` version `2.4.x` and removed in version `3.0.x` [link](https://support.konghq.com/support/s/article/Custom-plugins-not-loading-with-no-LuaRocks-module-found-for-kong-plugins-base-plugin). Now, `kong-oidc` needs to support `kong` version `3.x` [issue](https://github.com/nokia/kong-oidc/issues/213);
 
 - When upgrading `postgres` to a version above `13.x` (using current kong version), there is an error while running `kong`
-  ```
+  ```text
   [error] 1#0: init_by_lua error: /usr/local/share/lua/5.1/pgmoon/init.lua:273: module 'openssl.rand' not found:No LuaRocks module found for openssl.rand
   	no field package.preload['openssl.rand']
   	no file './openssl/rand.lua'
