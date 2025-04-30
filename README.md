@@ -255,7 +255,7 @@ Also, before redirecting to the request to the upstream service, a `Serverless F
 
   List books
   ```bash
-  docker exec -it mongodb mongo bookdb
+  docker exec -it mongodb mongosh bookdb
   db.books.find()
   ```
   > Type `exit` to get out of MongoDB shell
